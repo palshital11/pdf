@@ -8,7 +8,16 @@
 <body>
   <div class="container">
     <h1>JPG to PDF Converter</h1>
-    <input type="file" id="imageInput" accept="image/jpeg" multiple>
+
+    <!-- 📷 Allows camera + gallery -->
+    <input 
+      type="file" 
+      id="imageInput" 
+      accept="image/jpeg" 
+      capture="environment" 
+      multiple 
+    >
+
     <button id="convertBtn">Convert to PDF</button>
     <p id="status"></p>
   </div>
