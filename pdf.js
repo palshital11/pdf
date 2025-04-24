@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('convertBtn').addEventListener('click', async () => {
     const input = document.getElementById('imageInput');
     const status = document.getElementById('status');
@@ -10,11 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4"
-    });
+    const pdf = new jsPDF();
 
     for (let i = 0; i < input.files.length; i++) {
       const file = input.files[i];
@@ -24,29 +20,22 @@ document.addEventListener("DOMContentLoaded", () => {
       img.src = imageData;
       await img.decode();
 
-      const pageWidth = 210;
-      const pageHeight = 297;
-      const imgAspectRatio = img.width / img.height;
-
-      let imgWidth = pageWidth;
-      let imgHeight = pageWidth / imgAspectRatio;
-
-      if (imgHeight > pageHeight) {
-        imgHeight = pageHeight;
-        imgWidth = pageHeight * imgAspectRatio;
-      }
+      const width = pdf.internal.pageSize.getWidth();
+      const height = (img.height * width) / img.width;
 
       if (i !== 0) pdf.addPage();
-      pdf.addImage(imageData, 'JPEG',
-        (pageWidth - imgWidth) / 2,
-        (pageHeight - imgHeight) / 2,
-        imgWidth,
-        imgHeight
-      );
+      pdf.addImage(imageData, 'JPEG', 0, 0, width, height);
     }
 
-    pdf.save("converted.pdf");
-    status.innerText = "✅ PDF created successfully!";
+    const blobURL = pdf.output("bloburl");
+    const a = document.createElement("a");
+    a.href = blobURL;
+    a.download = "converted.pdf";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    status.innerHTML = `✅ PDF ready! <a href="${blobURL}" download="converted.pdf">Click here if it didn't auto-download</a>`;
   });
 });
 
